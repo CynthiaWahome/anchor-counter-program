@@ -1,11 +1,10 @@
-<h1 align="center">anchor-counter</h1>
-
-<p align="center">
-  <b>A minimal Solana Anchor program that implements an on-chain counter </b>
-</p>
+<h1 align="center">onchain-counter</h1>
 
 <p align="center">
   <img src="https://res.cloudinary.com/cycy/image/upload/v1794422085/o3n28zegh1apxwqnyut5.gif" alt="Counter demo">
+</p>
+<p align="center">
+  <b>A minimal Solana Anchor program that implements an on-chain counter </b>
 </p>
 
 <br>
@@ -42,8 +41,8 @@
 
 ### 1. Clone 
 ```bash
-git clone git@github.com:CynthiaWahome/anchor-counter.git
-cd anchor-counter
+git clone git@github.com:CynthiaWahome/onchain-counter.git
+cd onchain-counter
 ```
 
 
@@ -65,7 +64,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000` and connect a wallet (Phantom or Backpack).
+Open `http://localhost:3000` and connect a [Phantom](https://phantom.app) or [Backpack](https://backpack.app) wallet.
 
 
 ### 5. Fund your wallet on devnet

@@ -5,7 +5,7 @@ A minimal full-stack Solana app for the Anchor `counter` program.
 See the [main README](../../README.md) for full end-to-end setup:
 clone → build → test → frontend → fund → deploy → logs → use.
 
-![Counter frontend](docs/counter-ui.png)
+![Counter frontend](assets/counter-ui.png)
 
 ## Stack
 
