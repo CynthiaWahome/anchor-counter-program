@@ -18,6 +18,32 @@ jobs:
           rustup default 1.97.1
           rustup component add rustfmt clippy
 
+      - name: Cache Cargo registry and git
+        uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0
+
+      - name: Determine Solana stable release version
+        id: solana-version
+        run: |
+          release_file=$(mktemp)
+          curl --fail --show-error --location --retry 3 --retry-all-errors \
+            --retry-delay 5 "https://api.github.com/repos/anza-xyz/agave/releases/latest" \
+            -o "$release_file"
+          version=$(grep -m 1 '"tag_name":' "$release_file" | sed -ne 's/^ *"tag_name": "\([^"]*\)",$/\1/p')
+          if [ -z "$version" ]; then
+            echo "Unable to determine latest Solana release" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Solana CLI
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57
+        with:
+          path: |
+            ~/.local/share/solana
+          key: solana-cli-${{ runner.os }}-${{ steps.solana-version.outputs.version }}-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            solana-cli-${{ runner.os }}-
+
       - name: Install Solana CLI
         run: |
           for attempt in 1 2 3; do

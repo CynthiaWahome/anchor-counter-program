@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("2VXwN3CYDMWdFbXcjYxaUAZMqLA3StMjebaQu7KdRDMM");
+declare_id!("542jDucD1Lr81e7s6ECAiocHsJC6JNkzLRsYaLyjFkdh");
 
 /// The counter stops at this value.
 #[constant]
