@@ -12,11 +12,23 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
 
+      - name: Cache Cargo registry and git
+        uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0
+
       - name: Install Rust toolchain
         run: |
           rustup toolchain install 1.97.1 --profile minimal
           rustup default 1.97.1
           rustup component add rustfmt clippy
+
+      - name: Cache Solana CLI
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57
+        with:
+          path: |
+            ${{ env.HOME }}/.local/share/solana
+          key: solana-cli-${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            solana-cli-${{ runner.os }}-
 
       - name: Install Solana CLI
         run: |
