@@ -64,7 +64,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000` and connect a wallet (Phantom or Backpack).
+Open `http://localhost:3000` and connect a [Phantom](https://phantom.app) or [Backpack](https://backpack.app) wallet.
 
 
 ### 5. Fund your wallet on devnet
