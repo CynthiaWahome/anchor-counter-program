@@ -35,7 +35,10 @@ jobs:
           solana --version
 
       - name: Install Anchor CLI
-        run: npm install -g @coral-xyz/anchor-cli
+        run: |
+          cargo install --git https://github.com/coral-xyz/anchor --tag v1.2.1 anchor-cli --locked
+          export PATH="$HOME/.cargo/bin:$PATH"
+          anchor --version
 
       - name: Build program (for Clippy to lint test targets)
         run: anchor build
