@@ -9,7 +9,7 @@ import {
 import type { AppClient } from "./client";
 
 export const PROGRAM_ID = address(
-  process.env.NEXT_PUBLIC_PROGRAM_ID,
+  process.env.NEXT_PUBLIC_PROGRAM_ID!,
 );
 export const SYSTEM_PROGRAM = address("11111111111111111111111111111111");
 export const MAX_COUNT = 10n;
