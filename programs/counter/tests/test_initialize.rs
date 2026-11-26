@@ -39,13 +39,9 @@ fn setup() -> (LiteSVM, Keypair, Keypair) {
     );
 
     let blockhash = svm.latest_blockhash();
-    let message =
-        Message::new_with_blockhash(&[instruction], Some(&payer.pubkey()), &blockhash);
-    let tx = VersionedTransaction::try_new(
-        VersionedMessage::Legacy(message),
-        &[&payer, &counter],
-    )
-    .unwrap();
+    let message = Message::new_with_blockhash(&[instruction], Some(&payer.pubkey()), &blockhash);
+    let tx = VersionedTransaction::try_new(VersionedMessage::Legacy(message), &[&payer, &counter])
+        .unwrap();
     assert!(svm.send_transaction(tx).is_ok());
     println!("initialize: ok");
 
@@ -77,10 +73,8 @@ fn initializes_and_increments() {
     );
 
     let blockhash = svm.latest_blockhash();
-    let message =
-        Message::new_with_blockhash(&[instruction], Some(&payer.pubkey()), &blockhash);
-    let tx =
-        VersionedTransaction::try_new(VersionedMessage::Legacy(message), &[&payer]).unwrap();
+    let message = Message::new_with_blockhash(&[instruction], Some(&payer.pubkey()), &blockhash);
+    let tx = VersionedTransaction::try_new(VersionedMessage::Legacy(message), &[&payer]).unwrap();
     assert!(svm.send_transaction(tx).is_ok());
     println!("increment: ok");
 
@@ -108,13 +102,9 @@ fn wrong_authority_cannot_increment() {
     );
 
     let blockhash = svm.latest_blockhash();
-    let message =
-        Message::new_with_blockhash(&[instruction], Some(&payer.pubkey()), &blockhash);
-    let tx = VersionedTransaction::try_new(
-        VersionedMessage::Legacy(message),
-        &[&payer, &attacker],
-    )
-    .unwrap();
+    let message = Message::new_with_blockhash(&[instruction], Some(&payer.pubkey()), &blockhash);
+    let tx = VersionedTransaction::try_new(VersionedMessage::Legacy(message), &[&payer, &attacker])
+        .unwrap();
 
     let result = svm.send_transaction(tx);
     println!("wrong authority rejected: {}", result.is_err());
@@ -140,11 +130,8 @@ fn stops_at_max_count() {
         let blockhash = svm.latest_blockhash();
         let message =
             Message::new_with_blockhash(&[instruction], Some(&payer.pubkey()), &blockhash);
-        let tx = VersionedTransaction::try_new(
-            VersionedMessage::Legacy(message),
-            &[&payer],
-        )
-        .unwrap();
+        let tx =
+            VersionedTransaction::try_new(VersionedMessage::Legacy(message), &[&payer]).unwrap();
         assert!(svm.send_transaction(tx).is_ok());
         println!("increment {}: ok", i + 1);
     }
@@ -167,11 +154,12 @@ fn stops_at_max_count() {
 
     svm.expire_blockhash();
     let blockhash = svm.latest_blockhash();
-    let message =
-        Message::new_with_blockhash(&[instruction], Some(&payer.pubkey()), &blockhash);
-    let tx =
-        VersionedTransaction::try_new(VersionedMessage::Legacy(message), &[&payer]).unwrap();
-    println!("increment 11 rejected: {}", svm.send_transaction(tx).is_err());
+    let message = Message::new_with_blockhash(&[instruction], Some(&payer.pubkey()), &blockhash);
+    let tx = VersionedTransaction::try_new(VersionedMessage::Legacy(message), &[&payer]).unwrap();
+    println!(
+        "increment 11 rejected: {}",
+        svm.send_transaction(tx).is_err()
+    );
 }
 
 #[test]
@@ -194,10 +182,8 @@ fn closes_the_counter_and_returns_rent() {
     );
 
     let blockhash = svm.latest_blockhash();
-    let message =
-        Message::new_with_blockhash(&[instruction], Some(&payer.pubkey()), &blockhash);
-    let tx =
-        VersionedTransaction::try_new(VersionedMessage::Legacy(message), &[&payer]).unwrap();
+    let message = Message::new_with_blockhash(&[instruction], Some(&payer.pubkey()), &blockhash);
+    let tx = VersionedTransaction::try_new(VersionedMessage::Legacy(message), &[&payer]).unwrap();
     assert!(svm.send_transaction(tx).is_ok());
     println!("close: ok");
 
