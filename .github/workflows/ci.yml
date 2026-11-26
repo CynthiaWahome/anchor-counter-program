@@ -18,7 +18,7 @@ jobs:
           rustup default 1.97.1
           rustup component add rustfmt clippy
 
-      - name: Install Solana CLI
+- name: Install Solana CLI
         run: |
           for attempt in 1 2 3; do
             if curl --fail --show-error --location --retry 3 --retry-all-errors \
@@ -34,10 +34,8 @@ jobs:
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
           solana --version
 
-      - name: Install Anchor CLI
-        run: |
-          cargo install --git https://github.com/coral-xyz/anchor --tag v1.2.1 anchor-cli --locked --force
-          anchor --version
+      - name: Build program (for Clippy to lint test targets)
+        run: anchor build
 
       - name: Format check (program)
         run: cargo fmt --check
