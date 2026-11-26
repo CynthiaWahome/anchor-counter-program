@@ -1,7 +1,8 @@
 {
-  "name": "counter-app",
+  "name": "onchain-counter-app",
   "version": "0.1.0",
   "private": true,
+  "author": "Cynthia Wahome",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

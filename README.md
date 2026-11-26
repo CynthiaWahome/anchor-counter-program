@@ -1,4 +1,4 @@
-<h1 align="center">anchor-counter-program</h1>
+<h1 align="center">onchain-counter</h1>
 
 <p align="center">
   <img src="https://res.cloudinary.com/cycy/image/upload/v1794422085/o3n28zegh1apxwqnyut5.gif" alt="Counter demo">
@@ -41,8 +41,8 @@
 
 ### 1. Clone 
 ```bash
-git clone git@github.com:CynthiaWahome/anchor-counter-program.git
-cd anchor-counter-program
+git clone git@github.com:CynthiaWahome/onchain-counter.git
+cd onchain-counter
 ```
 
 
