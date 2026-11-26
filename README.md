@@ -297,7 +297,7 @@ After deploying, note your program ID from `Anchor.toml` and set it in
 | **2. Deploy** | `anchor program deploy --provider.cluster devnet` |
 | **3. Logs** | `solana logs -k ~/.config/solana/id.json <your-program-id>` |
 
-Open `http://localhost:3000`, connect Phantom (devnet), create a counter, and
+Open `http://localhost:3000`, connect [Phantom](https://phantom.app) or [Backpack](https://backpack.app) (devnet), create a counter, and
 watch on-chain `msg!` output in Terminal 3.
 
 # Dev3pack-Counter-example-program-
