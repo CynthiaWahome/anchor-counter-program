@@ -38,6 +38,13 @@ jobs:
       - name: Anchor tests
         run: anchor test
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
       - name: Typecheck frontend
         working-directory: ./app
         run: npm ci && npm run typecheck
