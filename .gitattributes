@@ -1,1 +1,3 @@
-app/** linguist-vendored
+app/**/*.css linguist-vendored
+app/**/*.ts linguist-vendored=false
+app/**/*.tsx linguist-vendored=false
