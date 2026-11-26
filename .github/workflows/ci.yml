@@ -30,6 +30,7 @@ jobs:
             sleep 5
           done
           sh /tmp/solana-install.sh
+          export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
           solana --version
 
