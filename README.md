@@ -1,303 +1,113 @@
-# Anchor Counter — live demo
+<h1 align="center">anchor-counter</h1>
 
-A minimal Anchor program for the Anchor class. It matches the 12-slide deck:
-one state account, initialize, increment, close, custom errors, and four tests.
+<p align="center">
+  <b>A minimal Solana Anchor program that implements an on-chain counter </b>
+</p>
 
-```
-programs/counter/src/lib.rs          the whole program
-programs/counter/tests/test_initialize.rs   four LiteSVM tests
-Anchor.toml                          program ID and provider
-```
+<p align="center">
+  <img src="https://res.cloudinary.com/cycy/image/upload/v1794422085/o3n28zegh1apxwqnyut5.gif" alt="Counter demo">
+</p>
 
-## Toolchain
+<br>
 
-This project was verified with:
+[![Anchor](https://img.shields.io/badge/anchor-1.2.1-14B8A6?style=for-the-badge&logo=anchor&logoColor=white)](#what-it-does)
+[![Solana](https://img.shields.io/badge/solana-4.1.2-9945FF?style=for-the-badge&logo=solana&logoColor=white)](#what-it-does)
+[![Rust](https://img.shields.io/badge/rust-1.97.1-F74C00?style=for-the-badge&logo=rust&logoColor=white)](#what-it-does)
+![Next.js](https://img.shields.io/badge/next.js-16.4.6-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![Tailwind](https://img.shields.io/badge/tailwind-3.4.17-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-4%20passed-brightgreen?style=for-the-badge&logo=rust&logoColor=white)
+![LiteSVM](https://img.shields.io/badge/litesvm-0.18.2-00A86B?style=for-the-badge&logo=rust&logoColor=white)
+[![Phantom](https://img.shields.io/badge/phantom-AB9FF2?style=for-the-badge&logo=phantom&logoColor=white)](#wallets)
+[![Backpack](https://img.shields.io/badge/backpack-000000?style=for-the-badge&logo=backpack&logoColor=white)](#wallets)
+[![License: MIT](https://img.shields.io/badge/license-MIT-00A86B?style=for-the-badge)](LICENSE)
 
-```text
-Anchor CLI       1.2.1
-Solana CLI       4.1.2
-Rust             1.97.1
-litesvm          0.18.2
-```
+<br>
 
-Install/switch Anchor:
+---
 
+
+
+## Getting started
+
+### Prerequisites
+
+
+- **Rust** `1.97.1` (pinned via `rust-toolchain.toml`)
+- **Solana CLI** `4.1.2`
+- **Anchor CLI** `1.2.1`
+- **Litesvm** `0.18.2`
+- **Node.js** + **Next.js** `16.4.6` — for the frontend (`cd app && npm install`)
+- **Wallet** — Phantom or Backpack, for the frontend (see [Wallets](#wallets))
+
+
+### 1. Clone 
 ```bash
-avm install 1.2.1
-avm use 1.2.1
-anchor --version
+git clone git@github.com:CynthiaWahome/anchor-counter.git
+cd anchor-counter
 ```
 
-The installed Solana CLI must be 4.1.x for this LiteSVM setup. To switch:
 
+### 2. Build the program
 ```bash
-agave-install init 4.1.2
-solana --version
+anchor build
 ```
 
-`rust-toolchain.toml` pins Rust `1.97.1`. The program itself is built with
-`cargo build-sbf`; the tests run on the host with LiteSVM.
+### 3. Run the tests
+```bash
+anchor test
+```
 
-## Frontend
 
-The Next.js app lives in `app/`:
-
+### 4. Frontend — install & run
 ```bash
 cd app
 npm install
 npm run dev
 ```
 
-See `app/README.md` for the wallet flow, typed counter client, and smoke test.
+Open `http://localhost:3000` and connect a wallet (Phantom or Backpack).
 
-## Build and test
 
-```bash
-anchor build
-anchor test
-```
-
-Expected:
-
-```text
-running 4 tests
-test initializes_and_increments ... ok
-test wrong_authority_cannot_increment ... ok
-test stops_at_max_count ... ok
-test closes_the_counter_and_returns_rent ... ok
-
-test result: ok. 4 passed; 0 failed
-```
-
-`anchor build` writes:
-
-```text
-target/deploy/counter.so
-target/idl/counter.json
-target/types/counter.ts
-```
-
-`anchor test` runs the Rust test in
-`programs/counter/tests/test_initialize.rs` through LiteSVM. No local validator
-and no JavaScript install are needed.
-
-## Seeing the test logs
-
-`Anchor.toml` runs:
-
-```toml
-[scripts]
-test = "cargo test -- --nocapture --test-threads=1"
-```
-
-So every `println!` in the tests is visible. `--test-threads=1` keeps the four
-tests from interleaving their output.
-
-You can run the same thing directly:
-
-```bash
-cargo test -p counter -- --nocapture --test-threads=1
-```
-
-Remove `--nocapture` to hide the logs again.
-
-## The program
-
-```rust
-#[account]
-#[derive(InitSpace)]
-pub struct Counter {
-    pub authority: Pubkey,
-    pub count: u64,
-}
-```
-
-- `#[account]` adds an 8-byte discriminator and Borsh serialization.
-- `InitSpace` computes the field size: `32 + 8 = 40` bytes.
-- Total account size: `8 + 40 = 48` bytes.
-- `authority` is the wallet allowed to increment.
-- `count` is the number being incremented.
-
-### Initialize
-
-```rust
-pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-    let counter = &mut ctx.accounts.counter;
-    counter.authority = ctx.accounts.authority.key();
-    counter.count = 0;
-    Ok(())
-}
-```
-
-The accounts struct:
-
-```rust
-#[derive(Accounts)]
-pub struct Initialize<'info> {
-    #[account(init, payer = authority, space = 8 + Counter::INIT_SPACE)]
-    pub counter: Account<'info, Counter>,
-    #[account(mut)]
-    pub authority: Signer<'info>,
-    pub system_program: Program<'info, System>,
-}
-```
-
-- `init` creates the account and assigns it to the program.
-- `payer = authority` says who pays rent.
-- `space = 8 + INIT_SPACE` allocates 48 bytes.
-- `authority` is `mut` because it pays lamports.
-- `system_program` is required because account creation is a System Program
-  instruction.
-
-This counter is a normal account, not a PDA, so the `counter` keypair also
-signs the initialize transaction. That is why the test signs with both the payer
-and the counter keypair.
-
-### Increment
-
-```rust
-#[derive(Accounts)]
-pub struct Increment<'info> {
-    #[account(mut, has_one = authority)]
-    pub counter: Account<'info, Counter>,
-    pub authority: Signer<'info>,
-}
-
-pub fn increment(ctx: Context<Increment>) -> Result<()> {
-    ctx.accounts.counter.count += 1;
-    Ok(())
-}
-```
-
-- `mut` makes the counter writable.
-- `has_one = authority` checks `counter.authority == authority.key()`.
-- `authority` is a `Signer` but not `mut`, because it only signs.
-- If the check fails, the handler never runs and the transaction reverts.
-
-### Custom error and `require!`
-
-```rust
-#[constant]
-pub const MAX_COUNT: u64 = 10;
-
-#[error_code]
-pub enum CounterError {
-    #[msg("Counter has reached the maximum value")]
-    Full,
-}
-```
-
-```rust
-pub fn increment(ctx: Context<Increment>) -> Result<()> {
-    require!(
-        ctx.accounts.counter.count < MAX_COUNT,
-        CounterError::Full
-    );
-
-    ctx.accounts.counter.count += 1;
-    Ok(())
-}
-```
-
-- `#[constant]` puts `MAX_COUNT` in the IDL.
-- `#[error_code]` defines a typed program error.
-- `require!` returns `Err(CounterError::Full.into())` when the condition is false.
-- The transaction reverts, so the count is not changed.
-
-### Close
-
-```rust
-#[derive(Accounts)]
-pub struct Close<'info> {
-    #[account(mut, close = authority, has_one = authority)]
-    pub counter: Account<'info, Counter>,
-    #[account(mut)]
-    pub authority: Signer<'info>,
-}
-
-pub fn close(_ctx: Context<Close>) -> Result<()> {
-    Ok(())
-}
-```
-
-- `mut` is required because closing changes the account.
-- `has_one = authority` ensures only the stored authority can close it.
-- `close = authority` runs **after** the handler:
-  - sends the account’s lamports (the rent) to `authority`,
-  - zeroes the account data,
-  - assigns the account back to the System Program.
-- The handler can be empty. If the handler returns `Err`, the close does not
-  happen because the whole transaction reverts.
-- The account can be created again later; “close” means “empty and refund,” not
-  “delete from the ledger.”
-
-## The tests
-
-`test_initialize.rs` has four tests:
-
-1. `initializes_and_increments` — creates a payer and counter keypair, airdrops
-   the payer, initializes the counter, checks `authority` and `count = 0`, then
-   increments and checks `count = 1`.
-2. `wrong_authority_cannot_increment` — passes a different signer as
-   `authority`. `has_one` rejects it, so `send_transaction` returns `Err`.
-3. `stops_at_max_count` — increments ten times, checks `count = 10`, then the
-   eleventh increment fails with `CounterError::Full`.
-4. `closes_the_counter_and_returns_rent` — calls `close`, then checks that the
-   counter account has zero lamports (or is gone).
-
-LiteSVM loads the compiled `.so`, sends real transactions, and lets us read the
-account state directly.
-
-## Teaching flow
-
-1. Open `lib.rs` and read the state struct.
-2. Read `Initialize` and explain `init`, `payer`, `space`, `Signer`, `System`.
-3. Read the initialize handler: authority + count.
-4. Read `Increment` and explain `mut`, `has_one`, `require!`, and `CounterError`.
-5. Read `Close` and explain `close = authority`, rent, and why the handler can be
-   empty.
-6. Run `anchor test`. Show four passing tests.
-7. Break `has_one = authority`, rerun. The wrong-authority and close tests fail.
-   Restore it.
-8. Change `space` to `8` and rerun. Initialization fails because the account is
-   too small. Restore it.
-9. Run `anchor build` and open `target/idl/counter.json`. Point out the IDL.
-
-## Experiments
-
-- Add `reset` that sets `count = 0`.
-- Add an event on increment with `#[event]` and `emit!`.
-- Change the counter to a PDA with
-  `seeds = [b"counter", authority.key().as_ref()], bump`.
-- Add a `close` test with a different authority and assert it fails.
-
-## Devnet deploy (optional)
-
+### 5. Fund your wallet on devnet
 ```bash
 solana config set --url devnet
 solana airdrop 1
-anchor program deploy
+# or https://faucet.solana.com/ with your Phantom address
 ```
 
-The program ID is in `Anchor.toml` and `declare_id!`. If you regenerate the
-program keypair, run:
-
+### 6. Deploy to devnet
 ```bash
-anchor keys sync
+cd app
+cp .env.example .env
+# set NEXT_PUBLIC_SOLANA_RPC_URL, NEXT_PUBLIC_PROGRAM_ID, ANCHOR_PROVIDER_URL in app/.env
+anchor program deploy --provider.cluster devnet
 ```
 
-## Run on devnet (3 terminals)
+Copy the printed program ID into `app/.env` as `NEXT_PUBLIC_PROGRAM_ID`.
 
-After deploying, note your program ID from `Anchor.toml` and set it in
-`app/.env.local` as `NEXT_PUBLIC_PROGRAM_ID=<your-program-id>`.
 
-| Terminal | Command |
-|----------|---------|
-| **1. Frontend** | `cd app && npm run dev` |
-| **2. Deploy** | `anchor program deploy --provider.cluster devnet` |
-| **3. Logs** | `solana logs -k ~/.config/solana/id.json <your-program-id>` |
+### 7. Stream program logs
+```bash
+solana logs -k ~/.config/solana/id.json $NEXT_PUBLIC_PROGRAM_ID
+```
 
-Open `http://localhost:3000`, connect Phantom (devnet), create a counter, and
-watch on-chain `msg!` output in Terminal 3.
+> ⚠ Run step 4 (`npm run dev`) in **one terminal** — it stays running. Run steps 6–7 in **separate terminals**; they run concurrently with the dev server.
 
-# Dev3pack-Counter-example-program-
+### 8. Use the counter (in the UI)
+1. **Initialize** — creates the counter account, sets you as authority, `count = 0`.
+2. **Increment** — adds 1 (authority-only, max 10).
+3. **Close** — closes the account, returns rent.
+
+---
+
+
+## Wallets
+
+- **Phantom**: [Create a Phantom wallet](https://phantom.app/) — install the browser extension or mobile app, then create a new wallet.
+- **Backpack**: [Create a Backpack wallet](https://backpack.app/) — install Backpack, create a new wallet, and save your seed phrase.
+
+---
+
+## License
+
+MIT. See [LICENSE](LICENSE).
