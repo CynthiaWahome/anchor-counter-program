@@ -34,10 +34,11 @@ jobs:
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
           solana --version
 
-      - name: Install Anchor CLI
+      - name: Install Anchor CLI via AVM
         run: |
-          cargo install --git https://github.com/coral-xyz/anchor --tag v1.2.1 anchor-cli --locked
-          export PATH="$HOME/.cargo/bin:$PATH"
+          cargo install --git https://github.com/coral-xyz/anchor avm --locked
+          avm install 1.2.1
+          avm use 1.2.1
           anchor --version
 
       - name: Build program (for Clippy to lint test targets)
