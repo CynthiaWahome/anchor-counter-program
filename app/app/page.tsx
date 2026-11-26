@@ -60,6 +60,7 @@ export default function Home() {
   const authority = connected ? address(connected.account.address) : null;
   const isConnected = Boolean(signer && authority);
   const atMax = counter ? counter.count >= MAX_COUNT : false;
+  const authorityText = mounted ? counter?.authority ?? authority ?? null : null;
 
   useEffect(() => {
     setMounted(true);
@@ -333,7 +334,7 @@ export default function Home() {
             <button
               className="primary wide create"
               onClick={handleInitialize}
-              disabled={!isConnected || busy !== null}
+              disabled={!mounted || !isConnected || busy !== null}
             >
               {busy === "initialize" ? "Creating…" : "Create counter"}
             </button>
@@ -350,7 +351,7 @@ export default function Home() {
           <article className="card dark">
             <span className="eyebrow light">AUTHORITY</span>
             <p className="mono light break">
-              {counter?.authority ?? authority ?? "Connect a wallet"}
+              {authorityText ?? "Connect a wallet"}
             </p>
             <p className="hint light">
               Only this wallet can increment or close the counter.

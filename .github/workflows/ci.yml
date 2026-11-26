@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ dev, main ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - name: Install Rust toolchain
+        run: |
+          rustup toolchain install 1.97.1 --profile minimal
+          rustup default 1.97.1
+          rustup component add rustfmt clippy
+
+      - name: Install Solana CLI
+        run: |
+          for attempt in 1 2 3; do
+            if curl --fail --show-error --location --retry 3 --retry-all-errors \
+              --retry-delay 5 https://release.anza.xyz/stable/install \
+              --output /tmp/solana-install.sh; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+            sleep 5
+          done
+          sh /tmp/solana-install.sh
+          export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          solana --version
+
+      - name: Install Anchor CLI via AVM
+        run: |
+          cargo install --git https://github.com/coral-xyz/anchor avm --locked
+          avm install 1.2.1
+          avm use 1.2.1
+          anchor --version
+
+      - name: Build program (for Clippy to lint test targets)
+        run: anchor build
+
+      - name: Format check (program)
+        run: cargo fmt --check
+
+      - name: Clippy (program)
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Anchor tests
+        run: anchor test
+
+      - name: Setup Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Typecheck frontend
+        working-directory: ./app
+        run: npm ci && npm run typecheck
