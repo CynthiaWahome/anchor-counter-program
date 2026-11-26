@@ -1,11 +1,10 @@
-<h1 align="center">anchor-counter</h1>
-
-<p align="center">
-  <b>A minimal Solana Anchor program that implements an on-chain counter </b>
-</p>
+<h1 align="center">anchor-counter-program</h1>
 
 <p align="center">
   <img src="https://res.cloudinary.com/cycy/image/upload/v1794422085/o3n28zegh1apxwqnyut5.gif" alt="Counter demo">
+</p>
+<p align="center">
+  <b>A minimal Solana Anchor program that implements an on-chain counter </b>
 </p>
 
 <br>
@@ -42,8 +41,8 @@
 
 ### 1. Clone 
 ```bash
-git clone git@github.com:CynthiaWahome/anchor-counter.git
-cd anchor-counter
+git clone git@github.com:CynthiaWahome/anchor-counter-program.git
+cd anchor-counter-program
 ```
 
 
