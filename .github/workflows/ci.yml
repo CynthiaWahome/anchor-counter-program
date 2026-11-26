@@ -30,7 +30,7 @@ jobs:
           anchor --version
 
       - name: Format check (program)
-        run: cargo fmt --check --programs
+        run: cargo fmt --check
 
       - name: Clippy (program)
         run: cargo clippy --all-targets -- -D warnings
