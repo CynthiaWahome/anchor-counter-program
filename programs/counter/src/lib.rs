@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("PLACEHOLDER_PROGRAM_ID");
+declare_id!("542jDucD1Lr81e7s6ECAiocHsJC6JNkzLRsYaLyjFkdh");
 
 /// The counter stops at this value.
 #[constant]
@@ -21,10 +21,7 @@ pub mod counter {
 
     /// Add one. Only the stored authority can do this, and only below MAX_COUNT.
     pub fn increment(ctx: Context<Increment>) -> Result<()> {
-        require!(
-            ctx.accounts.counter.count < MAX_COUNT,
-            CounterError::Full
-        );
+        require!(ctx.accounts.counter.count < MAX_COUNT, CounterError::Full);
 
         ctx.accounts.counter.count += 1;
         msg!("increment: counter now at {}", ctx.accounts.counter.count);
