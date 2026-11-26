@@ -18,7 +18,7 @@ jobs:
           rustup default 1.97.1
           rustup component add rustfmt clippy
 
-- name: Install Solana CLI
+      - name: Install Solana CLI
         run: |
           for attempt in 1 2 3; do
             if curl --fail --show-error --location --retry 3 --retry-all-errors \
